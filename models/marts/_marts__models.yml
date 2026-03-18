@@ -1,0 +1,69 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: >
+      Customer 360 mart. One row per authenticated user combining identity
+      traits, order history, and behavioural engagement. Anonymous activity
+      is attributed to users via the identity graph in int_user_identity.
+      Materialised as a table for fast BI queries.
+
+      customer_segment values:
+        prospect         - identified user with no orders yet
+        new_customer     - 1 order, placed within the last 30 days
+        repeat_customer  - 2+ orders, most recent within the last 30 days
+        at_risk          - last order 31-90 days ago
+        churned          - last order more than 90 days ago
+    config:
+      materialized: table
+    columns:
+      - name: user_id
+        tests:
+          - not_null
+          - unique
+      - name: email
+      - name: first_name
+      - name: last_name
+      - name: full_name
+      - name: locale
+      - name: timezone
+      - name: traits_updated_at
+      - name: first_seen_at
+      - name: last_seen_at
+      - name: first_order_at
+      - name: last_order_at
+      - name: total_orders
+        tests:
+          - not_null
+      - name: unique_orders
+      - name: lifetime_value
+        tests:
+          - not_null
+      - name: avg_order_value
+      - name: max_order_value
+      - name: orders_with_coupon
+      - name: total_discount
+      - name: days_since_last_order
+      - name: preferred_checkout_flow
+      - name: preferred_currency
+      - name: total_sessions
+      - name: total_page_views
+      - name: total_product_views
+      - name: total_cart_adds
+      - name: total_searches
+      - name: total_checkouts_started
+      - name: total_wishlist_saves
+      - name: avg_pages_per_session
+      - name: add_to_cart_rate
+      - name: is_repeat_buyer
+      - name: is_coupon_user
+      - name: customer_segment
+        tests:
+          - accepted_values:
+              values:
+                - prospect
+                - new_customer
+                - repeat_customer
+                - at_risk
+                - churned
+                - unknown
