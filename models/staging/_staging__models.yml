@@ -1,0 +1,489 @@
+version: 2
+
+models:
+  - name: stg_demo_tea_e_shop__tracks
+    description: >
+      Cleaned and renamed spine of all track() calls from the Demo Tea e-shop.
+      One row per event; use this to count total volume and join to event-specific
+      staging models on event_id.
+    columns:
+      - name: event_id
+        description: Unique RudderStack message ID for this event.
+        tests:
+          - not_null
+          - unique
+      - name: anonymous_id
+        description: Anonymous identifier set by the RudderStack SDK before user sign-in.
+        tests:
+          - not_null
+      - name: user_id
+        description: Authenticated user ID, populated after identify() is called.
+      - name: event_name
+        description: Snake-cased event name (e.g. order_completed).
+        tests:
+          - not_null
+      - name: event_timestamp
+        description: Client-side timestamp of when the event occurred.
+        tests:
+          - not_null
+      - name: received_at
+        description: Server-side timestamp of when RudderStack received the event.
+      - name: session_id
+        description: RudderStack session identifier.
+      - name: is_session_start
+        description: True if this event is the first event in a new session.
+      - name: channel
+        description: SDK channel (web, server, mobile, etc.).
+      - name: page_url
+        description: Full URL of the page on which the event fired.
+      - name: utm_source
+        description: UTM source from campaign tracking.
+      - name: utm_medium
+        description: UTM medium from campaign tracking.
+      - name: utm_campaign
+        description: UTM campaign name.
+
+  - name: stg_demo_tea_e_shop__identifies
+    description: >
+      Cleaned identify() calls. Each row represents a moment when a user's
+      traits were set or updated. Use to build the latest-snapshot user dimension.
+    columns:
+      - name: event_id
+        description: Unique RudderStack message ID.
+        tests:
+          - not_null
+          - unique
+      - name: user_id
+        description: Authenticated user ID.
+        tests:
+          - not_null
+      - name: anonymous_id
+        description: Anonymous identifier prior to sign-in.
+      - name: email
+        description: User email address from identify traits.
+      - name: first_name
+        description: User first name from identify traits.
+      - name: last_name
+        description: User last name from identify traits.
+      - name: full_name
+        description: Full name field from identify traits.
+      - name: event_timestamp
+        description: Client-side timestamp.
+        tests:
+          - not_null
+
+  - name: stg_demo_tea_e_shop__pages
+    description: >
+      Cleaned page() calls. One row per page-view event with URL, title, referrer,
+      and UTM campaign context.
+    columns:
+      - name: event_id
+        description: Unique RudderStack message ID.
+        tests:
+          - not_null
+          - unique
+      - name: anonymous_id
+        description: Anonymous identifier.
+        tests:
+          - not_null
+      - name: user_id
+        description: Authenticated user ID (null for unauthenticated views).
+      - name: page_name
+        description: Logical page name passed to page().
+      - name: page_url
+        description: Full URL of the page viewed.
+      - name: page_path
+        description: URL path component.
+      - name: referrer
+        description: HTTP referrer URL.
+      - name: event_timestamp
+        description: Client-side timestamp.
+        tests:
+          - not_null
+
+  - name: stg_demo_tea_e_shop__order_completed
+    description: >
+      Cleaned Order Completed events. One row per successfully placed order.
+      The primary revenue fact table for the shop.
+    columns:
+      - name: event_id
+        description: Unique RudderStack message ID.
+        tests:
+          - not_null
+          - unique
+      - name: anonymous_id
+        description: Anonymous identifier.
+        tests:
+          - not_null
+      - name: user_id
+        description: Authenticated user ID.
+      - name: order_id
+        description: Application-level order identifier.
+        tests:
+          - not_null
+      - name: order_total
+        description: Total order value including tax and shipping.
+      - name: order_subtotal
+        description: Pre-tax, pre-shipping order value.
+      - name: order_tax
+        description: Tax amount applied to the order.
+      - name: order_shipping
+        description: Shipping cost applied to the order.
+      - name: order_discount
+        description: Discount amount applied to the order.
+      - name: coupon
+        description: Coupon code used (if any).
+      - name: currency
+        description: ISO 4217 currency code.
+      - name: checkout_flow
+        description: Identifier for which checkout flow variant was used.
+      - name: products
+        description: >
+          JSON array of product objects serialised as text by RudderStack.
+          Parse in downstream models as needed.
+      - name: event_timestamp
+        description: Client-side timestamp.
+        tests:
+          - not_null
+
+  - name: stg_demo_tea_e_shop__product_viewed
+    description: >
+      Cleaned Product Viewed events. One row per product detail page view.
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+      - name: anonymous_id
+        tests:
+          - not_null
+      - name: user_id
+        description: Authenticated user ID (null for guests).
+      - name: product_id
+        description: Application-level product identifier.
+        tests:
+          - not_null
+      - name: product_name
+        description: Display name of the product.
+      - name: category
+        description: Product category.
+      - name: brand
+        description: Product brand.
+      - name: sku
+        description: Stock-keeping unit.
+      - name: price
+        description: Listed unit price at time of view.
+      - name: currency
+        description: ISO 4217 currency code.
+      - name: variant
+        description: Product variant (size, colour, etc.).
+      - name: event_timestamp
+        tests:
+          - not_null
+
+  - name: stg_demo_tea_e_shop__product_added
+    description: >
+      Cleaned Product Added events. One row per add-to-cart action.
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+      - name: anonymous_id
+        tests:
+          - not_null
+      - name: product_id
+        tests:
+          - not_null
+      - name: price
+        description: Unit price at time of add.
+      - name: quantity
+        description: Quantity added.
+      - name: checkout_flow
+        description: Checkout flow variant context (if already in checkout).
+      - name: event_timestamp
+        tests:
+          - not_null
+
+  - name: stg_demo_tea_e_shop__product_removed
+    description: >
+      Cleaned Product Removed events. One row per remove-from-cart action.
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+      - name: anonymous_id
+        tests:
+          - not_null
+      - name: product_id
+        tests:
+          - not_null
+      - name: event_timestamp
+        tests:
+          - not_null
+
+  - name: stg_demo_tea_e_shop__cart_viewed
+    description: >
+      Cleaned Cart Viewed events. One row per cart page view.
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+      - name: anonymous_id
+        tests:
+          - not_null
+      - name: cart_id
+        description: Application-level cart identifier.
+      - name: cart_value
+        description: Total value of items in the cart at time of view.
+      - name: currency
+        description: ISO 4217 currency code.
+      - name: products
+        description: JSON array of cart items serialised as text.
+      - name: event_timestamp
+        tests:
+          - not_null
+
+  - name: stg_demo_tea_e_shop__checkout_started
+    description: >
+      Cleaned Checkout Started events. One row per checkout initiation.
+      Use as the entry point of the purchase funnel.
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+      - name: anonymous_id
+        tests:
+          - not_null
+      - name: order_id
+        description: Provisional order ID assigned at checkout start.
+      - name: cart_value
+        description: Cart value at time of checkout start.
+      - name: checkout_flow
+        description: Checkout flow variant.
+      - name: event_timestamp
+        tests:
+          - not_null
+
+  - name: stg_demo_tea_e_shop__checkout_step_viewed
+    description: >
+      Cleaned Checkout Step Viewed events. One row per checkout step page view.
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+      - name: anonymous_id
+        tests:
+          - not_null
+      - name: order_id
+        description: Order ID in progress.
+      - name: step
+        description: Numeric step index.
+      - name: step_name
+        description: Human-readable step name (e.g. Shipping, Payment).
+      - name: checkout_flow
+        description: Checkout flow variant.
+      - name: event_timestamp
+        tests:
+          - not_null
+
+  - name: stg_demo_tea_e_shop__checkout_step_completed
+    description: >
+      Cleaned Checkout Step Completed events. One row per step completion.
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+      - name: anonymous_id
+        tests:
+          - not_null
+      - name: step
+        description: Numeric step index.
+      - name: step_name
+        description: Human-readable step name.
+      - name: payment_method
+        description: Payment method selected (populated on payment step).
+      - name: shipping_method
+        description: Shipping method selected (populated on shipping step).
+      - name: checkout_flow
+        description: Checkout flow variant.
+      - name: event_timestamp
+        tests:
+          - not_null
+
+  - name: stg_demo_tea_e_shop__payment_info_entered
+    description: >
+      Cleaned Payment Info Entered events. One row per payment details entry.
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+      - name: anonymous_id
+        tests:
+          - not_null
+      - name: order_id
+        description: Order ID in progress.
+      - name: payment_method
+        description: Payment method entered.
+      - name: checkout_flow
+        description: Checkout flow variant.
+      - name: event_timestamp
+        tests:
+          - not_null
+
+  - name: stg_demo_tea_e_shop__product_list_viewed
+    description: >
+      Cleaned Product List Viewed events. One row per product listing page view.
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+      - name: anonymous_id
+        tests:
+          - not_null
+      - name: list_id
+        description: Identifier for the product list (e.g. category slug).
+      - name: category
+        description: Product category being browsed.
+      - name: products
+        description: JSON array of products displayed in the list.
+      - name: event_timestamp
+        tests:
+          - not_null
+
+  - name: stg_demo_tea_e_shop__products_searched
+    description: >
+      Cleaned Products Searched events. One row per search query submission.
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+      - name: anonymous_id
+        tests:
+          - not_null
+      - name: search_query
+        description: The search term entered by the user.
+        tests:
+          - not_null
+      - name: event_timestamp
+        tests:
+          - not_null
+
+  - name: stg_demo_tea_e_shop__coupon_applied
+    description: >
+      Cleaned Coupon Applied events. One row per successful coupon application.
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+      - name: anonymous_id
+        tests:
+          - not_null
+      - name: order_id
+        description: Order or cart the coupon was applied to.
+      - name: coupon_id
+        description: Unique coupon identifier.
+      - name: coupon_name
+        description: Human-readable coupon name.
+      - name: discount
+        description: Discount amount granted.
+      - name: event_timestamp
+        tests:
+          - not_null
+
+  - name: stg_demo_tea_e_shop__product_clicked
+    description: >
+      Cleaned Product Clicked events. One row per product card click from a listing page.
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+      - name: anonymous_id
+        tests:
+          - not_null
+      - name: product_id
+        tests:
+          - not_null
+      - name: product_name
+        description: Display name of the product clicked.
+      - name: position
+        description: Position of the product card in the list.
+      - name: event_timestamp
+        tests:
+          - not_null
+
+  - name: stg_demo_tea_e_shop__product_added_to_wishlist
+    description: >
+      Cleaned Product Added to Wishlist events. One row per wishlist save action.
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+      - name: anonymous_id
+        tests:
+          - not_null
+      - name: product_id
+        tests:
+          - not_null
+      - name: wishlist_id
+        description: Identifier of the wishlist.
+      - name: event_timestamp
+        tests:
+          - not_null
+
+  - name: stg_demo_tea_e_shop__promotion_viewed
+    description: >
+      Cleaned Promotion Viewed events. One row per promotional creative view.
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+      - name: anonymous_id
+        tests:
+          - not_null
+      - name: promotion_id
+        description: Unique identifier for the promotion.
+      - name: promotion_name
+        description: Human-readable promotion name.
+      - name: creative
+        description: Creative variant identifier.
+      - name: position
+        description: Position of the creative on the page.
+      - name: event_timestamp
+        tests:
+          - not_null
+
+  - name: stg_demo_tea_e_shop__promotion_clicked
+    description: >
+      Cleaned Promotion Clicked events. One row per promotional creative click.
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+      - name: anonymous_id
+        tests:
+          - not_null
+      - name: promotion_id
+        description: Unique identifier for the promotion.
+      - name: promotion_name
+        description: Human-readable promotion name.
+      - name: creative
+        description: Creative variant identifier.
+      - name: position
+        description: Position of the creative on the page.
+      - name: event_timestamp
+        tests:
+          - not_null

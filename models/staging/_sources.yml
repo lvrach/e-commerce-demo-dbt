@@ -1,0 +1,75 @@
+version: 2
+
+sources:
+  - name: demo_tea_e_shop
+    description: >
+      Raw event-stream data loaded by RudderStack from the Demo Tea e-shop
+      JavaScript source into the demo_tea_e_shop schema.
+    schema: demo_tea_e_shop
+    tables:
+      - name: tracks
+        description: >
+          Spine of all track() calls — one row per event fired by the shop.
+          Used to count total event volume and join to event-specific tables.
+      - name: identifies
+        description: >
+          identify() calls capturing user traits (name, email) at sign-up or
+          login. Used to build the user dimension.
+      - name: pages
+        description: >
+          page() calls recording every page-view event with URL, title, and
+          referrer information.
+      - name: order_completed
+        description: >
+          Fired when a customer successfully completes an order. Contains
+          order totals, tax, shipping, discount, coupon, and checkout_flow.
+      - name: product_viewed
+        description: >
+          Fired when a product detail page is viewed. Contains product
+          attributes (id, name, category, brand, sku, price, currency).
+      - name: product_added
+        description: >
+          Fired when a product is added to the shopping cart.
+      - name: product_removed
+        description: >
+          Fired when a product is removed from the shopping cart.
+      - name: cart_viewed
+        description: >
+          Fired when the cart page is viewed. Contains cart_id, products
+          (JSON), and cart value.
+      - name: checkout_started
+        description: >
+          Fired when the user initiates the checkout flow. Contains order_id,
+          cart value, coupon, checkout_flow, and products (JSON).
+      - name: checkout_step_viewed
+        description: >
+          Fired when an individual checkout step page is viewed (e.g. address,
+          shipping, payment).
+      - name: checkout_step_completed
+        description: >
+          Fired when the user completes a checkout step and advances to the
+          next one.
+      - name: payment_info_entered
+        description: >
+          Fired when payment details are entered during checkout.
+      - name: product_list_viewed
+        description: >
+          Fired when a product listing or category page is viewed.
+      - name: products_searched
+        description: >
+          Fired when the user submits a search query on the shop.
+      - name: coupon_applied
+        description: >
+          Fired when a coupon code is successfully applied to a cart or order.
+      - name: product_clicked
+        description: >
+          Fired when a product card is clicked from a listing page.
+      - name: product_added_to_wishlist
+        description: >
+          Fired when a product is saved to the user's wishlist.
+      - name: promotion_viewed
+        description: >
+          Fired when a promotional banner or campaign creative is viewed.
+      - name: promotion_clicked
+        description: >
+          Fired when a promotional banner or campaign creative is clicked.
