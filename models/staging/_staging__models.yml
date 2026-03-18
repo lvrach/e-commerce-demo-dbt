@@ -141,6 +141,17 @@ models:
         description: >
           JSON array of product objects serialised as text by RudderStack.
           Parse in downstream models as needed.
+      - name: email
+        description: >
+          Purchaser email captured as a direct event property (populated for orders
+          placed after the ecommerce-rudder-demo PR #30 deploy). Will be null for
+          older orders and guest checkouts that did not supply an email.
+          Downstream models should use COALESCE(email, user_email) to maximise coverage.
+      - name: user_email
+        description: >
+          Purchaser email from identify() traits context (context_traits_email).
+          Present for all authenticated users regardless of deploy date.
+          Use as a fallback when the direct email property is null.
       - name: event_timestamp
         description: Client-side timestamp.
         tests:

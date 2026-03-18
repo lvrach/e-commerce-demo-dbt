@@ -39,6 +39,10 @@ renamed as (
         context_page_path               as page_path,
 
         -- user context
+        -- `email` is the direct event property added in app PR #30.
+        -- `user_email` is the traits-context fallback (always populated for
+        -- authenticated users via identify()). Downstream: COALESCE(email, user_email).
+        email,
         context_traits_email            as user_email,
 
         -- device / browser
