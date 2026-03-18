@@ -18,10 +18,8 @@ renamed as (
         price,
         currency,
         variant,
-        position,
         url                             as product_url,
         image_url,
-        list_id,
 
         -- timestamps
         timestamp                       as event_timestamp,

@@ -8,8 +8,6 @@ renamed as (
         id                              as event_id,
         anonymous_id,
         user_id,
-        wishlist_id,
-        wishlist_name,
 
         -- product attributes
         product_id,

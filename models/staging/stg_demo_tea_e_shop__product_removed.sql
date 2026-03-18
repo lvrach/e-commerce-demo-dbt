@@ -7,7 +7,6 @@ renamed as (
         -- ids
         id                              as event_id,
         anonymous_id,
-        user_id,
 
         -- product attributes
         product_id,
@@ -16,7 +15,6 @@ renamed as (
         brand,
         sku,
         price,
-        quantity,
         currency,
         variant,
         url                             as product_url,
@@ -34,9 +32,6 @@ renamed as (
         -- page context
         context_page_url                as page_url,
         context_page_path               as page_path,
-
-        -- user context
-        context_traits_email            as user_email,
 
         -- device / browser
         context_user_agent              as user_agent,

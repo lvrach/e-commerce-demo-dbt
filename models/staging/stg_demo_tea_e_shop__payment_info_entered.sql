@@ -9,12 +9,11 @@ renamed as (
         anonymous_id,
         user_id,
         order_id,
+        checkout_id,
 
         -- payment
         step,
-        step_name,
         payment_method,
-        checkout_flow,
 
         -- timestamps
         timestamp                       as event_timestamp,

@@ -8,12 +8,11 @@ renamed as (
         id                              as event_id,
         anonymous_id,
         user_id,
-        order_id,
+        checkout_id,
 
         -- step
         step,
         step_name,
-        checkout_flow,
 
         -- timestamps
         timestamp                       as event_timestamp,

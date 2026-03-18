@@ -41,11 +41,6 @@ renamed as (
         -- user context
         context_traits_email            as user_email,
 
-        -- campaign
-        context_campaign_source         as utm_source,
-        context_campaign_medium         as utm_medium,
-        context_campaign_name           as utm_campaign,
-
         -- device / browser
         context_user_agent              as user_agent,
         context_locale                  as locale,
