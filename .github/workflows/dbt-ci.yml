@@ -16,20 +16,11 @@ jobs:
     permissions:
       contents: read # actions/checkout
 
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_USER: dbt
-          POSTGRES_PASSWORD: ${{ secrets.DBT_PG_PASSWORD }}
-          POSTGRES_DB: e_commerce
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U dbt"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+    env:
+      DBT_PG_HOST: ep-tiny-thunder-aizc7qga-pooler.c-4.us-east-1.aws.neon.tech
+      DBT_PG_USER: neondb_owner
+      DBT_PG_PASSWORD: ${{ secrets.DBT_PG_PASSWORD }}
+      DBT_PG_DBNAME: neondb
 
     steps:
       - name: Harden the runner (Audit all outbound calls)
@@ -53,16 +44,6 @@ jobs:
 
       - name: Verify connection
         run: dbt debug
-        env:
-          DBT_PG_HOST: localhost
-          DBT_PG_USER: dbt
-          DBT_PG_PASSWORD: ${{ secrets.DBT_PG_PASSWORD }}
-          DBT_PG_DBNAME: e_commerce
 
       - name: dbt build
         run: dbt build
-        env:
-          DBT_PG_HOST: localhost
-          DBT_PG_USER: dbt
-          DBT_PG_PASSWORD: ${{ secrets.DBT_PG_PASSWORD }}
-          DBT_PG_DBNAME: e_commerce

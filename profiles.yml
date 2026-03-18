@@ -3,10 +3,11 @@ e_commerce_demo:
   outputs:
     dev:
       type: postgres
-      host: "{{ env_var('DBT_PG_HOST', 'localhost') }}"
+      host: "{{ env_var('DBT_PG_HOST', 'ep-tiny-thunder-aizc7qga-pooler.c-4.us-east-1.aws.neon.tech') }}"
       port: 5432
-      user: "{{ env_var('DBT_PG_USER') }}"
+      user: "{{ env_var('DBT_PG_USER', 'neondb_owner') }}"
       password: "{{ env_var('DBT_PG_PASSWORD') }}"
-      dbname: "{{ env_var('DBT_PG_DBNAME', 'e_commerce') }}"
+      dbname: "{{ env_var('DBT_PG_DBNAME', 'neondb') }}"
       schema: dbt_dev
       threads: 4
+      sslmode: require
