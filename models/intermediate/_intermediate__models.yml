@@ -1,0 +1,77 @@
+version: 2
+
+models:
+  - name: int_user_identity
+    description: >
+      Identity graph mapping every anonymous_id to its most recently
+      associated user_id. Built from identify() calls where a user logs in
+      or signs up. Use this to attribute anonymous activity to known users.
+    columns:
+      - name: anonymous_id
+        tests:
+          - not_null
+          - unique
+      - name: user_id
+        tests:
+          - not_null
+      - name: identified_at
+
+  - name: int_user_traits
+    description: >
+      Latest-snapshot user profile traits per user_id.
+    columns:
+      - name: user_id
+        tests:
+          - not_null
+          - unique
+      - name: email
+      - name: first_name
+      - name: last_name
+      - name: full_name
+      - name: locale
+      - name: timezone
+      - name: traits_updated_at
+
+  - name: int_user_orders
+    description: >
+      Order aggregates per user with anonymous orders stitched to known
+      users via int_user_identity.
+    columns:
+      - name: user_id
+        tests:
+          - not_null
+          - unique
+      - name: total_orders
+      - name: unique_orders
+      - name: lifetime_value
+      - name: avg_order_value
+      - name: max_order_value
+      - name: first_order_at
+      - name: last_order_at
+      - name: orders_with_coupon
+      - name: total_discount
+      - name: days_since_last_order
+      - name: preferred_checkout_flow
+      - name: preferred_currency
+
+  - name: int_user_engagement
+    description: >
+      Behavioural engagement counts per user, stitching anonymous activity
+      to known users.
+    columns:
+      - name: user_id
+        tests:
+          - not_null
+          - unique
+      - name: total_sessions
+      - name: total_events
+      - name: first_seen_at
+      - name: last_seen_at
+      - name: total_page_views
+      - name: total_product_views
+      - name: total_cart_adds
+      - name: total_searches
+      - name: total_checkouts_started
+      - name: total_wishlist_saves
+      - name: avg_pages_per_session
+      - name: add_to_cart_rate
