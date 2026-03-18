@@ -1,0 +1,22 @@
+name: 'e_commerce_demo'
+version: '1.0.0'
+profile: 'e_commerce_demo'
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets: ["target", "dbt_packages", "logs"]
+require-dbt-version: [">=1.8.0", "<2.0.0"]
+
+models:
+  e_commerce_demo:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: ephemeral
+    marts:
+      +materialized: table
