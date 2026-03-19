@@ -121,6 +121,7 @@ models:
         description: Application-level order identifier.
         tests:
           - not_null
+          - unique
       - name: order_total
         description: Total order value including tax and shipping.
       - name: order_subtotal
